@@ -1,0 +1,52 @@
+// Initialize variables to store patient data
+var patientName = "";
+var patientIdentifier = "";
+var patientAddress = "";
+var patientPhone = "";
+
+// Check if entry array and Patient resource are present
+if (msg.entry && msg.entry.length > 0 && msg.entry[0].resource && msg.entry[0].resource.resourceType === "Patient") {
+  var patient = msg.entry[0].resource;
+  
+  // Check if name is present
+  if (patient.name && patient.name.length > 0) {
+    patientName = patient.name[0].family + "^" + patient.name[0].given[0];
+  }
+  
+  // Check if identifier is present
+  if (patient.identifier && patient.identifier.length > 0) {
+    patientIdentifier = patient.identifier[0].value;
+  }
+  
+  // Check if address is present
+  if (patient.address && patient.address.length > 0) {
+    patientAddress = patient.address[0].line[0]; // Assuming address is an array
+  }
+  
+  // Check if telecom is present
+  if (patient.telecom && patient.telecom.length > 0) {
+    patientPhone = patient.telecom[0].value;
+  }
+}
+
+// Create the HL7 message
+var hl7Message = [
+  "MSH|^~\\&|XYZ HOSPITAL|QUEST LABS|" + DateUtil.getCurrentDate('yyyyMMddHHmmss') + "||ORM^O01|XYZ123456|P|2.5.1|",
+  "PID|||" + patientIdentifier + "||" + patientName + "||" + patient.birthDate + "|" + patient.gender,
+  "SAC|1|SN|BD EDTA^BD Ethylenediaminetetraacetic Acid (EDTA) Tube^LN|5|mL|REFRIGERATED",
+//  "NTE|1|F|F^Fasting for at least 8 hours before the blood draw. The patient should last eat at 10:00 PM the night before the blood draw and should not drink anything after midnight the night before the blood draw.",
+//  "OBX|1|NM|BLOOD^Blood^LN|1.5|uL|100-150|||F",
+//  "OBR|2|XYZHOSPITAL|123456|CMP14^Comprehensive metabolic panel^LN|20230924095132|R|||202309250900|F",
+//  "OBX|2|NM|SERUM^Serum^LN|1.5|mL|5-10|||F",
+//  "OBR|3|XYZHOSPITAL|123456|LIPID^Lipid panel^LN|20230924095132|R|||202309250900|F",
+//  "OBX|3|NM|SERUM^Serum^LN|1.5|mL|5-10|||F",
+//  "OBR|4|XYZHOSPITAL|123456|THYROID^Thyroid panel^LN|20230924095132|R|||202309250900|F",
+//  "OBX|4|NM|SERUM^Serum^LN|1.5|mL|5-10|||F",
+  // Add other segments as needed
+].join('\r');
+
+// Set the transformed HL7 message
+msg = hl7Message;
+
+
+Input message-

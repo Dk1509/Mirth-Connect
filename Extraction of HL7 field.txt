@@ -1,0 +1,40 @@
+// Extract result from OBX segment (potentially indicating abnormality)
+var result = msg['OBX']['OBX.8']['OBX.8.1'].toString();
+
+// Initialize empty string to store interpreted result
+var output = '';
+
+// Check if result indicates abnormality (assuming "true" means abnormal)
+if (result === "true") {
+  output = "Abnormal study";
+} else {
+  // Handle cases where result is not "true" (e.g., "false" or other values)
+  // You might want to log a message or set output to "Normal study" based on your logic
+  console.log("Unexpected result value:", result);
+}
+
+// Log the interpreted result for informative purposes
+logger.info("AI Output: " + output);
+
+// Build accession number string
+var accessionNumber = "AccessionNumber: " + msg['OBR']['OBR.3']['OBR.3.1'].toString() + "\n";
+
+// Build data string with HTML table
+var data = "<table>" +
+           "<tr>" +
+             "<th>Vendor</th>" +
+             "<th>AI Algorithm</th>" +
+             "<th>AI Output</th>" +
+           "</tr>" +
+           "<tr>" +
+             "<td>" + msg['MSH']['MSH.4']['MSH.4.1'].toString() + "</td>" +
+             "<td>" + msg['OBX']['OBX.5']['OBX.5.1'].toString() + "</td>" +
+             "<td>" + output + "</td>" +
+           "</tr>" +
+         "</table>";
+
+// Store data string in channelMap under key 'message'
+channelMap.put('message', data);
+
+// Store accession number string in channelMap under key 'Accession' (correcting typo)
+channelMap.put('Accession', accessionNumber);
